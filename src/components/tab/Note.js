@@ -33,8 +33,15 @@ const useStyles = makeStyles({
   }
 })
 
+/**
+ * Component to represent a Note
+ * @param {string} inputId - Note id. i.e.: "barId chordId noteId". It needs improvement.
+ * @param {string} note - Note of the component.
+ * @param {function} handleNote - Function to handle notes change. It'll be a context.
+ */
 const Note = ({inputId, note, handleNote}) => {
   const classes = useStyles()
+  // Check if an input is filled and then apply a class to the input DOM.
   const inputFilled = note !== "" ? classes.filled : ''
 
   return (

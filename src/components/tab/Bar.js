@@ -15,10 +15,17 @@ const useStyles = makeStyles({
   },
 })
 
+/**
+ * Component to represent a Bar
+ * @param {number} inputId - Bar id.
+ * @param {object} bar - Bar object with its informations.
+ * @param {function} handleNote - Function to handle notes change. It'll be a context.
+ */
 const Bar = ({ inputId, bar, handleNote }) => {
   const { registerChords } = useContext(BarContext)
   const classes = useStyles()
 
+  //Listen to changes in the current Bar, and if its a new one it attaches a chord to the component.
   useEffect(() => {
     registerChords(bar, inputId)
   }, [bar, inputId, registerChords])
