@@ -8,36 +8,32 @@ const useStyles = makeStyles({
     "& > :first-child": {
       borderLeft: "1px solid #aaa",
     },
-    "& > :last-child": {
-      borderRight: "1px solid #aaa",
-      borderCollapse: "separate"
-    },
   },
 })
 
 /**
  * Component to represent a Bar
- * @param {number} inputId - Bar id.
+ * @param {string} barKey - Bar id.
  * @param {object} bar - Bar object with its informations.
  * @param {function} handleNote - Function to handle notes change. It'll be a context.
  */
-const Bar = ({ inputId, bar, handleNote }) => {
+const Bar = ({ barKey, bar, handleNote }) => {
   const { registerChords } = useContext(BarContext)
   const classes = useStyles()
 
   //Listen to changes in the current Bar, and if its a new one it attaches a chord to the component.
   useEffect(() => {
-    registerChords(bar, inputId)
-  }, [bar, inputId, registerChords])
+    registerChords(bar, barKey)
+  }, [bar, barKey, registerChords])
 
   return (
     <Box className={classes.bar} display="flex">
       {bar.chords && (
-        bar.chords.map((chord, i) => (
-          <Chord 
-            key={`${inputId} ${i}`}
-            inputId={`${inputId} ${i}`}
-            chord={chord}
+        Object.keys(bar.chords).map(key => (
+          <Chord
+            key={key}
+            chordKey={`${barKey} ${key}`}
+            chord={bar.chords[key]}
             handleNote={handleNote}
           />
         ))
