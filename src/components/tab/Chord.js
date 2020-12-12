@@ -8,7 +8,6 @@ import Note from './Note';
  * @param {function} handleNote - Function to handle notes change. It'll be a context.
  */
 const Chord = ({ chordKey, chord, handleNote }) => {
-  console.log(chordKey)
   const renderNotes = () => {
     const allNotes = chord.slice()
     

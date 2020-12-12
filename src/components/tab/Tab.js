@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Bar from './Bar';
-import { BarContext } from '../../contexts/BarContext';
+import { NoteContext } from '../../contexts/NoteContext';
 import { Box, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
@@ -19,16 +19,18 @@ const Tab = () => {
   // Tracks the selected bar
   const [currentBar, setCurrentBar] = useState(0)
   // Every Bar data, incluiding how many beats in a Bar, beats per minute and eventually the chords.
-  const [tab, setTab] = useState({
-    bar0: {
+  const [tab, setTab] = useState([
+    {
+      id: 'bar0',
       beats: 4,
-      bpm: 500,
+      bpm: 120,
     },
-    bar1: {
+    {
+      id: 'bar1',
       beats: 4,
-      bpm: 500,
+      bpm: 120,
     },
-  })
+  ])
 
   /**
    * Function to add chords to created bars
@@ -36,16 +38,24 @@ const Tab = () => {
    * @param {number} i - Bar index
    */
   const registerChords = useCallback((bar, key) => {
-    let allTabs = {...tab}
+    let newBar = {...bar}
     const numberOfNotes = bar.beats
 
     if (!bar.hasOwnProperty('chords')) {
-      bar["chords"] = {}
+      newBar.chords = []
+
       for (let i = 0; i < numberOfNotes; i++) {
-        bar["chords"][`chord${i}`] = Array(6).fill("")
+        const chord = {
+          id: `chord${i}`,
+          notes: Array(6).fill("")
+        }
+        newBar.chords = [...newBar.chords, chord]
       }
-      allTabs[key] = bar
-      setTab(allTabs)
+
+      console.log(tab)
+      const newBars = tab.map(item => item.id === key ? newBar : item)
+      console.log(newBars)
+      setTab(newBars)
     }
   }, [tab.length])
 
@@ -56,8 +66,8 @@ const Tab = () => {
   const handleNote = e => {
     const [barKey, chordKey, k] = e.target.name.split(" ")
     const value = parseInt(e.target.value)
-    let bars = {...tab}
-    let chords = {...bars[barKey].chords}
+    let allBars = tab.slice()
+    let chords = allBars.filter(item => item.id === barKey)[0].chords
 
     // Check if the value extracted from the Note component is valid
     const note = (!Number.isNaN(value) && value >= 0 && value <= 24) ? value : ""
@@ -66,24 +76,33 @@ const Tab = () => {
       e.target.value = ""
     }
 
-    chords[chordKey][k] = note
-    bars[barKey].chords = chords
-    setTab(bars)
+    chords = chords.map(item => {
+      if (item.id === chordKey) {
+        item.notes[k] = note
+      }
+      return item
+    })
+    allBars = allBars.map(item => {
+      if (item.id === barKey) {
+        item.chords = chords
+      }
+      return item
+    })
+    setTab(allBars)
   }
 
   return (
     <>
       <Box display="flex" flexDirection="row" className={classes.tab}>
-        <BarContext.Provider value={{ registerChords }}>
-          {Object.keys(tab).map(key => (
+          {tab.map(item => (
             <Bar
-              key={key}
-              barKey={key}
-              bar={tab[key]}
+              key={item.id}
+              barKey={item.id}
+              bar={item}
+              registerChords={registerChords}
               handleNote={e => handleNote(e)}
             />
           ))}
-        </BarContext.Provider>
       </Box>
     </>
   )

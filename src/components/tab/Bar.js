@@ -1,6 +1,5 @@
 import { Box, makeStyles } from '@material-ui/core';
-import React, { useContext, useEffect } from 'react';
-import { BarContext } from '../../contexts/BarContext';
+import React, { useEffect } from 'react';
 import Chord from './Chord';
 
 const useStyles = makeStyles({
@@ -17,8 +16,7 @@ const useStyles = makeStyles({
  * @param {object} bar - Bar object with its informations.
  * @param {function} handleNote - Function to handle notes change. It'll be a context.
  */
-const Bar = ({ barKey, bar, handleNote }) => {
-  const { registerChords } = useContext(BarContext)
+const Bar = ({ barKey, bar, registerChords, handleNote }) => {
   const classes = useStyles()
 
   //Listen to changes in the current Bar, and if its a new one it attaches a chord to the component.
@@ -29,11 +27,11 @@ const Bar = ({ barKey, bar, handleNote }) => {
   return (
     <Box className={classes.bar} display="flex">
       {bar.chords && (
-        Object.keys(bar.chords).map(key => (
+        bar.chords.map(item => (
           <Chord
-            key={key}
-            chordKey={`${barKey} ${key}`}
-            chord={bar.chords[key]}
+            key={item.id}
+            chordKey={`${barKey} ${item.id}`}
+            chord={item.notes}
             handleNote={handleNote}
           />
         ))
